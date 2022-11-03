@@ -54,7 +54,7 @@ try {
       handleStartupError(err);
     });
 
-  const { SESSION_TRACKER_PORT: sessionTrackerPort } = process.env;
+  const { NP_SESSION_TRACKER_PORT: sessionTrackerPort } = process.env;
 
   const server = new SessionServer(
     sessionTrackerPort ? Number(sessionTrackerPort) : SessionServer.defaultPort,

@@ -13,7 +13,7 @@ export class Logger {
       new winston.transports.File({
         filename: this._logFilePath,
         maxsize: 4 * 1024000,
-        maxFiles: 1,
+        maxFiles: 5,
       }),
     ];
     if(dev)
