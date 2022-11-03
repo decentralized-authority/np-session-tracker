@@ -1,5 +1,5 @@
 # Node Pilot Session Tracker
-Provides HTTP endpoint for checking whether or not a pocket node hosted by Node Pilot is in a session.
+Keeps track of when POKT nodes hosted on Node Pilot are in a session.
 
 ## Required Environment Variables
 * `NP_API_ENDPOINT` - Node Pilot JSON RPC server endpoint e.g. `10.0.0.2:34417`
@@ -32,4 +32,9 @@ docker run --rm -ti --name np-session-tracker \
 -v /home/myuser/np-session-tracker-log:/np-session-tracker/log \
 -p 34418:34418/tcp \
 decentralizedauthority/np-session-tracker:0.1.0
+```
+
+## Check Node's status
+```
+curl http://localhost:34418/node/pokt-000
 ```
