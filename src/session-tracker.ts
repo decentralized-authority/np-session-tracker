@@ -54,7 +54,7 @@ export class SessionTracker {
       if(res.error)
         throw res.error;
       else
-        return res.result || [];
+        return res.result ? res.result.filter(n => n.ticker === 'pokt') : [];
     } catch(err) {
       this._logError(err);
       return [];
