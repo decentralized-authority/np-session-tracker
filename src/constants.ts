@@ -1,6 +1,7 @@
 import path from 'path';
 
 export const POCKET_ENDPOINT = process.env.POCKET_ENDPOINT || '';
+export const POCKET_HEIGHT_ENDPOINT = process.env.POCKET_HEIGHT_ENDPOINT || '';
 export const NP_API_ENDPOINT = process.env.NP_API_ENDPOINT || '';
 
 export const IS_DEV = process.env.NODE_ENV !== 'production';

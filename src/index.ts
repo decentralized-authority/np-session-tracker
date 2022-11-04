@@ -1,6 +1,14 @@
 import fs from 'fs-extra';
 import { Logger } from './logger';
-import { IS_DEV, LOG_DIR_PATH, LOG_FILE_PATH, NP_API_ENDPOINT, POCKET_ENDPOINT, ROOT_DIR_PATH } from './constants';
+import {
+  IS_DEV,
+  LOG_DIR_PATH,
+  LOG_FILE_PATH,
+  NP_API_ENDPOINT,
+  POCKET_ENDPOINT,
+  POCKET_HEIGHT_ENDPOINT,
+  ROOT_DIR_PATH,
+} from './constants';
 import { Configuration, HttpRpcProvider, Pocket } from '@pokt-network/pocket-js';
 import { SessionTracker } from './session-tracker';
 import { NPAPI } from './np-api';
@@ -31,14 +39,19 @@ try {
 
   logger.info(`Starting Node Pilot Session Tracker v${version}`);
 
-  if(!POCKET_ENDPOINT)
+  if(!POCKET_ENDPOINT && !POCKET_HEIGHT_ENDPOINT)
     throw 'POCKET_ENDPOINT environment variable is not set.';
   if(!NP_API_ENDPOINT)
     throw 'NP_API_ENDPOINT environment variable is not set.';
 
-  const dispatcher = new URL(POCKET_ENDPOINT);
-  const configuration = new Configuration(5, 1000, 0, 40000, undefined, undefined, undefined, undefined, undefined, undefined, false);
-  const pocket = new Pocket([dispatcher], new HttpRpcProvider(dispatcher), configuration);
+  let pocket: Pocket|null;
+  if(POCKET_ENDPOINT) {
+    const dispatcher = new URL(POCKET_ENDPOINT);
+    const configuration = new Configuration(5, 1000, 0, 40000, undefined, undefined, undefined, undefined, undefined, undefined, false);
+    pocket = new Pocket([dispatcher], new HttpRpcProvider(dispatcher), configuration);
+  } else {
+    pocket = null;
+  }
 
   const np = new NPAPI(NP_API_ENDPOINT, request);
 

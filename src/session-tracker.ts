@@ -1,9 +1,10 @@
 import { Pocket } from '@pokt-network/pocket-js';
 import { NPAPI } from './np-api';
-import { REQUEST_TIMEOUT } from './constants';
+import { POCKET_HEIGHT_ENDPOINT, REQUEST_TIMEOUT } from './constants';
 import isError from 'lodash/isError';
 import isNumber from 'lodash/isNumber';
 import { NodeLauncherNode } from './interfaces';
+import request from 'superagent';
 
 export interface SessionStatus {
   id: string
@@ -15,7 +16,7 @@ export interface SessionStatus {
 export class SessionTracker {
 
   _np: NPAPI;
-  _pocket: Pocket;
+  _pocket: Pocket|null;
   _logInfo: (message: string) => void;
   _logError: (err: string|Error) => void;
   _requestTimeout = REQUEST_TIMEOUT;
@@ -25,7 +26,7 @@ export class SessionTracker {
   _updateIntervalLength = 60000;
   updateInterval: any;
 
-  constructor(np: NPAPI, pocket: Pocket, logInfo: (message: string) => void, logError: (message: string|Error) => void) {
+  constructor(np: NPAPI, pocket: Pocket|null, logInfo: (message: string) => void, logError: (message: string|Error) => void) {
     this._np = np;
     this._pocket = pocket;
     this._logInfo = logInfo;
@@ -33,18 +34,32 @@ export class SessionTracker {
   }
 
   async getBlockHeight(): Promise<bigint> {
+    const defaultReturn = BigInt(0);
     try {
-      const res = await this._pocket.rpc()?.query.getHeight(this._requestTimeout);
-      if(isError(res)) {
-        throw res;
-      } else if(res) {
-        return res.height as bigint;
+      if(this._pocket) {
+        const res = await this._pocket.rpc()?.query.getHeight(this._requestTimeout);
+        if(isError(res)) {
+          throw res;
+        } else if(res) {
+          return res.height as bigint;
+        } else {
+          return defaultReturn;
+        }
+      } else if(POCKET_HEIGHT_ENDPOINT) {
+        const { body } = await request
+          .get(POCKET_HEIGHT_ENDPOINT)
+          .timeout(REQUEST_TIMEOUT);
+        if(body && body.height) {
+          return BigInt(body.height);
+        } else {
+          return defaultReturn;
+        }
       } else {
-        return BigInt(0);
+        return defaultReturn;
       }
     } catch(err) {
       this._logError(err);
-      return BigInt(0);
+      return defaultReturn;
     }
   }
 
