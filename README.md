@@ -31,7 +31,7 @@ docker run --rm -ti --name np-session-tracker \
 --env NP_API_ENDPOINT=http://10.0.0.2:34417 \
 -v /home/myuser/np-session-tracker-log:/np-session-tracker/log \
 -p 34418:34418/tcp \
-decentralizedauthority/np-session-tracker:0.1.1
+decentralizedauthority/np-session-tracker:0.1.2
 ```
 
 ## Check Node's status
